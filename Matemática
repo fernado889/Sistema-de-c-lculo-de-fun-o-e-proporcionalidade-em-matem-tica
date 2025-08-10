@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Intervenção Pedagógica em Matemática - Desenvolvido por Fernando Assunção</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: linear-gradient(135deg, #1E3C72, #2A5298);
+      color: #fff;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Tela de login */
+    #loginScreen {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+    }
+    #loginScreen label {
+      font-size: 1.3em;
+      font-weight: 700;
+      color: #FFD700;
+      text-shadow: 1px 1px 2px #000;
+    }
+    #loginScreen input {
+      padding: 10px;
+      font-size: 1.2em;
+      border-radius: 8px;
+      border: none;
+      width: 250px;
+      font-weight: 700;
+      color: #000;
+    }
+    #loginScreen button {
+      background-color: #FF4500;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-size: 1.2em;
+      border-radius: 8px;
+      padding: 10px 25px;
+      font-weight: 900;
+      transition: background-color 0.3s ease;
+    }
+    #loginScreen button:hover {
+      background-color: #FFD700;
+      color: #000;
+    }
+    #loginError {
+      color: #FF4500;
+      font-weight: 700;
+      text-shadow: 1px 1px 2px #000;
+    }
+
+    /* Conteúdo principal */
+    #mainContent {
+      display: none;
+      flex-direction: column;
+      flex-grow: 1;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    header h1, header h2 {
+      margin: 0;
+      font-weight: 900;
+      color: #FFD700;
+      text-shadow: 2px 2px 6px #000;
+    }
+    header h1 {
+      font-size: 3em;
+      margin-bottom: 6px;
+    }
+    header h2 {
+      font-size: 3em;
+      margin-top: 0;
+    }
+
+    section {
+      background-color: #0B3D91;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 0 20px #FF4500;
+      margin-bottom: 40px;
+      flex-grow: 1;
+    }
+
+    h2 {
+      color: #FFFF00;
+      text-shadow: 1px 1px 2px #000;
+      margin-top: 0;
+      margin-bottom: 20px;
+    }
+
+    label, input, select, button {
+      display: block;
+      margin: 8px 0;
+      font-weight: 700;
+      font-size: 1.1em;
+    }
+
+    input, select {
+      padding: 8px;
+      border-radius: 6px;
+      border: none;
+      width: 100%;
+      max-width: 250px;
+      font-weight: 700;
+      color: #000;
+    }
+
+    button {
+      background-color: #FF4500;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-size: 1.2em;
+      border-radius: 8px;
+      padding: 10px 20px;
+      width: fit-content;
+      transition: background-color 0.3s ease;
+      font-weight: 900;
+    }
+    button:hover {
+      background-color: #FFD700;
+      color: #000;
+    }
+
+    canvas {
+      max-width: 600px;
+      margin-top: 20px;
+      border-radius: 10px;
+      background-color: #FFF;
+    }
+
+    .resultados {
+      margin-top: 10px;
+      white-space: pre-wrap;
+      background-color: #FFFF00;
+      padding: 15px;
+      border-radius: 8px;
+      color: #000;
+      font-weight: 700;
+      font-size: 1em;
+      box-shadow: 0 0 10px #FF4500;
+    }
+
+    .flex-container {
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+
+    table {
+      border-collapse: collapse;
+      margin-top: 20px;
+      font-size: 14px;
+      max-height: 320px;
+      overflow-y: auto;
+      background-color: #FFFF00;
+      color: #000;
+      border-radius: 8px;
+      box-shadow: 0 0 10px #FF4500;
+    }
+
+    th, td {
+      border: 1px solid #000;
+      padding: 6px 12px;
+      text-align: center;
+      font-weight: 700;
+    }
+    th {
+      background-color: #FF4500;
+      color: #fff;
+      text-shadow: 1px 1px 2px #000;
+    }
+
+    /* Ajuste do canvas da função */
+    #graficoFuncao {
+      max-width: 500px;
+      max-height: 300px;
+      width: 100%;
+      height: 300px;
+      margin-top: 20px;
+      border: 2px solid #FF4500;
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    /* Rodapé */
+    footer {
+      text-align: center;
+      padding: 12px 20px;
+      background-color: #FF4500;
+      color: #fff;
+      font-weight: 700;
+      font-size: 1em;
+      box-shadow: 0 -3px 10px #FFD700;
+      margin-top: auto;
+      border-radius: 8px 8px 0 0;
+      user-select: none;
+    }
+    footer button {
+      margin-top: 10px;
+      padding: 8px 20px;
+      font-weight: 900;
+      font-size: 1em;
+      cursor: pointer;
+      border-radius: 8px;
+      border: none;
+      background-color: #FF4500;
+      color: white;
+      transition: background-color 0.3s ease;
+    }
+    footer button:hover {
+      background-color: #FFD700;
+      color: #000;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Tela de login -->
+  <div id="loginScreen">
+    <label for="senhaInput">Digite a senha para entrar:</label>
+    <input type="password" id="senhaInput" />
+    <button onclick="login()">Entrar</button>
+    <div id="loginError"></div>
+  </div>
+
+  <!-- Conteúdo principal -->
+  <div id="mainContent" style="display: none; flex-direction: column;">
+    <header>
+      <h1>Intervenção Pedagógica em Matemática</h1>
+    </header>
+
+    <section>
+      <h2>Grandezas Proporcionais</h2>
+      <label>Valor 1 (A): <input type="number" id="valor1"></label>
+      <label>Valor 2 (B): <input type="number" id="valor2"></label>
+      <label>Valor 3 (C): <input type="number" id="valor3"></label>
+      <label>Tipo de Proporção:
+        <select id="tipo">
+          <option value="direta">Diretamente Proporcionais</option>
+          <option value="inversa">Inversamente Proporcionais</option>
+        </select>
+      </label>
+      <button onclick="calcularProporcao()">Calcular</button>
+      <div class="resultados" id="resultadoProporcao"></div>
+
+      <div class="flex-container">
+        <canvas id="graficoProporcao" width="600" height="400"></canvas>
+        <table id="tabelaProporcao">
+          <thead><tr><th>x (Grandeza 1)</th><th>y (Grandeza 2)</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <h2>Calculadora de Funções (1º e 2º Grau)</h2>
+      <label>Coeficiente a: <input type="number" id="a"></label>
+      <label>Coeficiente b: <input type="number" id="b"></label>
+      <label>Coeficiente c (deixe vazio para função do 1º grau): <input type="number" id="c"></label>
+      <button onclick="calcularFuncao()">Calcular</button>
+      <div class="resultados" id="resultadoFuncao"></div>
+      <canvas id="graficoFuncao"></canvas>
+    </section>
+
+    <footer>
+      Desenvolvido por Fernando Assunção
+      <br />
+      <button id="btnSair" onclick="sair()">Sair</button>
+    </footer>
+  </div>
+
+  <script>
+    const senhaCorreta = "matematica123";
+
+    function login() {
+      const senha = document.getElementById('senhaInput').value;
+      const erroDiv = document.getElementById('loginError');
+      if (senha === senhaCorreta) {
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('mainContent').style.display = 'flex';
+        erroDiv.textContent = '';
+      } else {
+        erroDiv.textContent = 'Senha incorreta. Tente novamente.';
+      }
+    }
+
+    function sair() {
+      document.getElementById('mainContent').style.display = 'none';
+      document.getElementById('loginScreen').style.display = 'flex';
+      document.getElementById('senhaInput').value = '';
+      document.getElementById('loginError').textContent = '';
+    }
+
+    let graficoProporcaoAtual = null;
+    let graficoFuncaoAtual = null;
+
+    function calcularProporcao() {
+      const A = parseFloat(document.getElementById('valor1').value);
+      const B = parseFloat(document.getElementById('valor2').value);
+      const C = parseFloat(document.getElementById('valor3').value);
+      const tipo = document.getElementById('tipo').value;
+      const resultadoDiv = document.getElementById('resultadoProporcao');
+      const tabelaCorpo = document.querySelector("#tabelaProporcao tbody");
+      let D, texto;
+
+      if (isNaN(A) || isNaN(B) || isNaN(C) || A === 0) {
+        resultadoDiv.textContent = "Por favor, preencha os valores corretamente (A não pode ser zero).";
+        return;
+      }
+
+      if (tipo === 'direta') {
+        D = (B * C) / A;
+        texto = `Regra de três (Direta):\n`;
+        texto += `${A} / ${B} = ${C} / D\n`;
+        texto += `D = (B × C) / A = (${B} × ${C}) / ${A} = ${D.toFixed(2)}`;
+      } else {
+        D = (A * B) / C;
+        texto = `Regra de três (Inversa):\n`;
+        texto += `${A} × ${B} = ${C} × D\n`;
+        texto += `D = (A × B) / C = (${A} × ${B}) / ${C} = ${D.toFixed(2)}`;
+      }
+
+      resultadoDiv.textContent = texto;
+
+      // Gerar múltiplos pontos com passo 0.5 e 20 pontos
+      const dataPoints = [];
+      tabelaCorpo.innerHTML = ""; // limpa tabela
+      const step = 0.5;
+      let count = 0;
+      for (let x = 1; count < 20; x += step, count++) {
+        let y;
+        if (tipo === 'direta') {
+          y = (B * x) / A;
+        } else {
+          y = (A * B) / x;
+        }
+        dataPoints.push({ x, y });
+        // Preencher tabela
+        const linha = document.createElement("tr");
+        linha.innerHTML = `<td>${x.toFixed(2)}</td><td>${y.toFixed(2)}</td>`;
+        tabelaCorpo.appendChild(linha);
+      }
+
+      if (graficoProporcaoAtual) graficoProporcaoAtual.destroy();
+
+      graficoProporcaoAtual = new Chart(document.getElementById('graficoProporcao'), {
+        type: 'line',
+        data: {
+          labels: dataPoints.map(p => p.x.toFixed(2)),
+          datasets: [{
+            label: tipo === 'direta' ? 'Direta' : 'Inversa',
+            data: dataPoints.map(p => p.y),
+            borderColor: 'rgba(255, 69, 0, 0.9)',
+            backgroundColor: 'rgba(255, 69, 0, 0.3)',
+            fill: true,
+            tension: 0.3,
+          }]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            y: { beginAtZero: true },
+            x: { beginAtZero: true }
+          },
+          plugins: {
+            legend: { labels: { color: '#FF4500', font: { weight: '900', size: 16 } } }
+          }
+        }
+      });
+    }
+
+    function calcularFuncao() {
+      const a = parseFloat(document.getElementById('a').value);
+      const b = parseFloat(document.getElementById('b').value);
+      const cInput = document.getElementById('c').value;
+      const c = cInput === "" ? 0 : parseFloat(cInput);
+      const resultadoDiv = document.getElementById('resultadoFuncao');
+
+      if (isNaN(a) || isNaN(b)) {
+        resultadoDiv.textContent = "Preencha os coeficientes a e b corretamente.";
+        return;
+      }
+      if (cInput !== "" && isNaN(c)) {
+        resultadoDiv.textContent = "Coeficiente c inválido.";
+        return;
+      }
+
+      let texto = "";
+      let dataPoints = [];
+
+      if (c === 0) {
+        // Função do 1º grau: y = a*x + b
+        texto = `Função do 1º grau: y = ${a}x + ${b}\n`;
+        texto += `Calculando pontos para x de -10 a 10...\n`;
+        for (let x = -10; x <= 10; x++) {
+          let y = a * x + b;
+          dataPoints.push({ x, y });
+        }
+      } else {
+        // Função do 2º grau: y = a*x² + b*x + c
+        texto = `Função do 2º grau: y = ${a}x² + ${b}x + ${c}\n`;
+        texto += `Calculando pontos para x de -10 a 10...\n`;
+        for (let x = -10; x <= 10; x++) {
+          let y = a * x * x + b * x + c;
+          dataPoints.push({ x, y });
+        }
+      }
+
+      resultadoDiv.textContent = texto;
+
+      if (graficoFuncaoAtual) graficoFuncaoAtual.destroy();
+
+      graficoFuncaoAtual = new Chart(document.getElementById('graficoFuncao'), {
+        type: 'line',
+        data: {
+          labels: dataPoints.map(p => p.x),
+          datasets: [{
+            label: 'f(x)',
+            data: dataPoints.map(p => p.y),
+            borderColor: 'rgba(255, 69, 0, 0.9)',
+            backgroundColor: 'rgba(255, 69, 0, 0.3)',
+            fill: false,
+            tension: 0.3,
+            pointRadius: 3,
+            pointHoverRadius: 6
+          }]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            y: { beginAtZero: true },
+            x: { beginAtZero: false }
+          },
+          plugins: {
+            legend: { labels: { color: '#FF4500', font: { weight: '900', size: 16 } } }
+          }
+        }
+      });
+    }
+  </script>
+</body>
+</html>
